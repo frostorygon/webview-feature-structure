@@ -30,11 +30,14 @@ feature-name/
 │   ├── screens/                      ← one folder per screen/step in the flow
 │   │   └── select-reason/
 │   │       ├── select-reason.component.js  ← class definition (state & logic only)
-│   │       ├── select-reason.template.js   ← lit-html template separate from logic
+│   │       ├── select-reason.template.js   ← pure template function (explicit props)
 │   │       ├── select-reason.js            ← registration entry point
 │   │       ├── select-reason.styles.js
 │   │       ├── select-reason.test.js
 │   │       ├── types.ts                    ← screen-specific type definitions
+│   │       ├── translations/               ← screen-scoped i18n (co-located)
+│   │       │   ├── en.js                   ← only selectReason.* keys
+│   │       │   └── nl.js
 │   │       ├── fixtures/                   ← mock data (shared by tests AND stories)
 │   │       │   ├── default.js
 │   │       │   ├── error.js
@@ -71,11 +74,11 @@ feature-name/
 │   │   ├── native-args.test.js
 │   │   └── types.ts                  ← NativeArgs, NativeEvent type definitions
 │   │
-│   ├── translations/                 ← i18n — all user-facing strings
-│   │   ├── en.js                     ← English (default / fallback)
-│   │   ├── nl.js                     ← Dutch
-│   │   ├── index.js                  ← locale resolver + interpolate utility
-│   │   └── translations.test.js      ← locale fallback + interpolation tests
+│   ├── translations/                 ← i18n — ONLY common/shared strings
+│   │   ├── common.en.js              ← shared: loading, retry, errors, buttons
+│   │   ├── common.nl.js
+│   │   ├── index.js                  ← getCommonTranslations() + interpolate()
+│   │   └── translations.test.js      ← common locale tests
 │   │
 │   └── tokens/                       ← design tokens (CSS custom properties)
 │       ├── colors.styles.js
@@ -154,15 +157,45 @@ this.data = null;
 
 ### 4. Registration split (Shoelace pattern)
 
-Every component has two files:
+Every component has three files:
 
 | File | Purpose | Side effects? |
 |---|---|---|
 | `[name].component.js` | Class definition (state, lifecycle, handlers) | ❌ None — safe to import |
-| `[name].template.js` | Contains the `lit-html` template function | ❌ None |
+| `[name].template.js` | Pure function — receives explicit props, returns `html` | ❌ None |
 | `[name].js` | Calls `customElements.define()` | ✅ Yes — registers the element |
 
 **Why:** Importing the class for testing or type-checking doesn't pollute the global custom element registry. Registration is explicit and guarded against double-registration.
+
+### 4b. Pure template pattern
+
+Templates are **pure functions** with **destructured props**. They never import anything except `html` from Lit. They never reach into `this`.
+
+```js
+// select-reason.template.js
+export const selectReasonTemplate = ({ t, reasons, isLoading, onReasonSelected }) => {
+  if (isLoading) return html`<div class="loading">${t.common.loading}</div>`;
+  return html`
+    <h1>${t.selectReason.title}</h1>
+    ${reasons.map(r => html`<reason-card .label=${r.label}></reason-card>`)}
+  `;
+};
+
+// select-reason.component.js
+render() {
+  return selectReasonTemplate({
+    t: { ...getCommonTranslations(this.locale), selectReason: screen },
+    reasons: this.data?.reasons ?? [],
+    isLoading: this.isLoading,
+    onReasonSelected: (e) => this._onReasonSelected(e.detail.reasonId),
+  });
+}
+```
+
+**Why:**
+- Every dependency is in the function signature — no hidden coupling
+- You can unit test the template by passing a plain object
+- Adding a prop means updating both files — the compiler catches missed bindings
 
 ### 5. The registry.js — central validation
 
@@ -180,15 +213,22 @@ Services are the **one** centralized layer. Why:
 - API contracts (request/response types) are a shared concern between FE and BE
 - Having `feature-api.js` in one place makes it trivial for backend to review
 
-### 7. The translations/ exception
+### 7. Co-located translations
 
-Also centralized. Why:
+Translations are **co-located with each screen**, not centralized. Why:
 
-- Every screen consumes translations, none produces them
-- One file per locale keeps translation diffs clean and reviewable
-- Keys are namespaced by screen (`selectReason.title`, `confirm.warning`)
-- The `common.*` namespace holds shared strings (buttons, generic errors)
-- Locale is resolved once at the flow level (from native args) and passed down
+- **Blast radius isolation** — editing `screens/select-reason/translations/en.js` cannot break any other screen
+- **Delete the screen folder → its translations go with it** — no orphaned keys
+- **Zero merge conflicts** — teams working on different screens never touch the same file
+
+The `src/translations/` directory holds **only common strings** (`Loading...`, `Try again`, `Something went wrong`) used by 2+ screens.
+
+**The rule:** If a string appears on only one screen, it lives in that screen's `translations/` folder. If it appears on 2+ screens, it goes in `common.en.js`.
+
+The component merges them:
+```js
+const t = { ...getCommonTranslations(this.locale), selectReason: screen };
+```
 
 ---
 

@@ -2,13 +2,16 @@
 import { html } from 'lit';
 
 /**
- * @param {import('./result-banner.component.js').ResultBanner} context
+ * @param {object} props
+ * @param {'success'|'error'|'warning'} props.variant
+ * @param {string} props.title
+ * @param {string} props.message
  */
-export function resultBannerTemplate(context) {
+export const resultBannerTemplate = ({ variant, title, message }) => {
   return html`
-    <div class="banner ${context.variant}">
-      <h2>${context.title}</h2>
-      <p>${context.message}</p>
+    <div class="banner ${variant}">
+      <h2>${title}</h2>
+      <p>${message}</p>
     </div>
   `;
-}
+};

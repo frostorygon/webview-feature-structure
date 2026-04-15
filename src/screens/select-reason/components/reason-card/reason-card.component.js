@@ -43,6 +43,11 @@ export class ReasonCard extends LitElement {
   }
 
   render() {
-    return reasonCardTemplate(this);
+    return reasonCardTemplate({
+      label: this.label,
+      isSelected: this.isSelected,
+      isDisabled: this.isDisabled,
+      onClickHandler: () => this._onClick(),
+    });
   }
 }

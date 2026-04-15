@@ -2,17 +2,21 @@
 import { html } from 'lit';
 
 /**
- * @param {import('./reason-card.component.js').ReasonCard} context
+ * @param {object} props
+ * @param {string} props.label
+ * @param {boolean} props.isSelected
+ * @param {boolean} props.isDisabled
+ * @param {function} props.onClickHandler
  */
-export function reasonCardTemplate(context) {
+export const reasonCardTemplate = ({ label, isSelected, isDisabled, onClickHandler }) => {
   return html`
     <button
       class="card"
-      ?disabled=${context.isDisabled}
-      aria-pressed=${context.isSelected}
-      @click=${context._onClick}
+      ?disabled=${isDisabled}
+      aria-pressed=${isSelected}
+      @click=${onClickHandler}
     >
-      ${context.label}
+      ${label}
     </button>
   `;
-}
+};

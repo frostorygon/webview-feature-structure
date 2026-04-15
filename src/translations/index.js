@@ -1,15 +1,21 @@
-import { en } from './en.js';
-import { nl } from './nl.js';
+import { common as commonEn } from './common.en.js';
+import { common as commonNl } from './common.nl.js';
 
-/** @type {Record<string, typeof en>} */
-const locales = { en, nl };
+/** @type {Record<string, { common: typeof commonEn }>} */
+const locales = {
+  en: { common: commonEn },
+  nl: { common: commonNl },
+};
 
 /**
- * Get translations for a given locale. Falls back to English.
+ * Get the common translations for a locale. Falls back to English.
+ *
+ * Screens merge their own co-located translations on top:
+ *   const t = { ...getCommonTranslations(locale), selectReason };
+ *
  * @param {string} [locale]
- * @returns {typeof en}
  */
-export function getTranslations(locale = 'en') {
+export function getCommonTranslations(locale = 'en') {
   return locales[locale] || locales.en;
 }
 

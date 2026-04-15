@@ -31,6 +31,10 @@ export class ResultBanner extends LitElement {
   }
 
   render() {
-    return resultBannerTemplate(this);
+    return resultBannerTemplate({
+      variant: this.variant,
+      title: this.title,
+      message: this.message,
+    });
   }
 }

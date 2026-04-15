@@ -31,7 +31,8 @@ export class FeatureFlow extends LitElement {
   }
 
   render() {
-    return featureFlowTemplate(this);
+    return featureFlowTemplate({
+      t: {}, // flow-level: merged by the router or passed to screens
+    });
   }
 }
-

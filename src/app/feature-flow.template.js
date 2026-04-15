@@ -2,12 +2,13 @@
 import { html } from 'lit';
 
 /**
- * @param {import('./feature-flow.component.js').FeatureFlow} context
+ * @param {object} props
+ * @param {object} props.t - Merged translations (common + flow)
  */
-export function featureFlowTemplate(context) {
+export const featureFlowTemplate = ({ t }) => {
   return html`
     <!-- Your proprietary router component goes here -->
-    <!-- <acme-router .config=${context.flowConfig} .args=${context.nativeArgs}></acme-router> -->
+    <!-- <acme-router .config=${...} .args=${...}></acme-router> -->
     <slot></slot>
   `;
-}
+};

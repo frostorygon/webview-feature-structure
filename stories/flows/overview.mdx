@@ -1,0 +1,15 @@
+# Flow Scenarios
+
+## Coverage
+
+| Scenario | Status | Description |
+|---|---|---|
+| Happy Path | ✅ | User selects reason → confirms → sees success |
+| API Unavailable → Error | ✅ | Backend is down → generic error screen |
+| Session Expired → Error | ✅ | Token expires mid-flow → session error screen |
+| Empty Reasons → Empty State | 🔲 | No reasons available (planned) |
+
+## Preconditions
+
+- **Happy Path**: Account is eligible for closure
+- **Error scenarios**: Any account — errors can happen regardless

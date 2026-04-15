@@ -1,0 +1,39 @@
+# Account Closure
+
+Allows the customer to close their savings or current account
+from the native banking app. Opens as an enhanced webview.
+
+## Flow Diagram
+
+```
+┌──────────────┐
+│ Select Reason│
+└──────┬───────┘
+       │
+┌──────▼───────┐
+│   Confirm    │
+└──────┬───────┘
+       │
+  ┌────┴────┐
+  │         │
+┌─▼──┐  ┌──▼──┐
+│ OK │  │ ERR │
+└────┘  └─────┘
+```
+
+## How to Navigate
+
+| If you are a...     | Start here |
+|---|---|
+| **Product Owner**    | → **Flows** — walk through each scenario end to end |
+| **Backend Engineer** | → **Screens** → open any screen → check `fixtures/` |
+| **Frontend Engineer**| → **Screens** → open the `Default` story → use controls |
+| **QA / Tester**      | → All stories are snapshot targets for visual regression |
+
+## Native Layer Args
+
+| Arg | Type | Description |
+|---|---|---|
+| `accountId` | `string` | The account identifier |
+| `accountHolder` | `string` | Customer display name |
+| `locale` | `string` | User locale (default: `en`) |

@@ -1,0 +1,36 @@
+# Enhanced Webview Feature
+
+> Single-feature repository for a banking enhanced webview.
+> Built with Lit + Lion web components, deployed inside a native mobile app's webview.
+
+## Architecture
+
+- [ARCHITECTURE.md](../ARCHITECTURE.md): Full folder structure, decision trees, conventions
+
+## Type Strategy
+
+- Code files: `.js` (JavaScript)
+- Type definitions: `types.ts` (TypeScript interfaces, consumed via JSDoc)
+- Pattern: `@type {import('./types').SomeType}` in JS files
+
+## Registration Pattern
+
+- `[name].component.js` — class definition (no side effects)
+- `[name].js` — calls `customElements.define()` (side effect)
+- `src/app/registry.js` — central registration + dev-mode validation
+
+## Key Files
+
+- `src/app/feature-flow.js` — entry point, orchestrates screens
+- `src/app/flow-config.js` — router configuration (screens, transitions)
+- `src/app/registry.js` — component registry + validation
+- `src/services/feature-api.js` — all API calls
+- `src/bridge/native-args.js` — native app argument parsing
+- `mocks/handlers.js` — MSW mock handlers
+
+## Conventions
+
+- [CONVENTIONS.md](.ai/CONVENTIONS.md): Naming, placement, rules
+- Fixtures live next to any component with 2+ data states
+- Tests import from `.component.js` (no side effects)
+- No template separation — extract sub-components instead
